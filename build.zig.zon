@@ -1,0 +1,12 @@
+.{
+    .name = .zate,
+    .version = "0.0.0",
+    .fingerprint = 0x1a5817d66bef1080,
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

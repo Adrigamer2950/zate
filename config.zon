@@ -1,0 +1,25 @@
+.{
+    .listen_address = "127.0.0.1:40120",
+
+    .default_backend = "server1",
+    .backends = .{ // Proxy currently doesn't support switching backends
+        .{
+            .name = "server1",
+            .address = "127.0.0.1:25565",
+        },
+    },
+
+    .status = .{
+        .version = .{
+            .name = "Zate",
+            .protocol = .none, // This means any version
+        },
+        .players = .{
+            .max = -1,
+            .online = -999,
+        },
+        .description = .{
+            .text = "§6test",
+        },
+    },
+}
