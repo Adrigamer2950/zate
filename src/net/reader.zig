@@ -4,7 +4,7 @@ pub fn readByte(r: *Reader) ReaderError!u8 {
     return try r.reader.takeByte();
 }
 
-pub inline fn takeInt(r: *Reader, comptime T: type, endian: std.builtin.Endian) ReaderError!T {
+pub inline fn readInt(r: *Reader, comptime T: type, endian: std.builtin.Endian) ReaderError!T {
     return try r.reader.takeInt(T, endian);
 }
 

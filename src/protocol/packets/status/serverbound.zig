@@ -41,8 +41,8 @@ pub const PingRequest = struct {
         return .{ .timestamp = timestamp };
     }
 
-    pub fn decode(reader: *std.Io.Reader) !PingRequest {
-        return .init(try reader.takeInt(i64, .big));
+    pub fn decode(reader: *net.Reader) !PingRequest {
+        return .init(try reader.readInt(i64, .big));
     }
 
     pub fn encode(response: PingRequest, writer: *std.Io.Writer) !void {

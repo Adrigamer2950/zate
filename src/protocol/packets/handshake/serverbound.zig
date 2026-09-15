@@ -42,7 +42,7 @@ pub const Intention = struct {
 
         const server_address = try reader.readAndAllocString(max_server_address_len, alloc);
 
-        const server_port = try reader.takeInt(u16, .big);
+        const server_port = try reader.readInt(u16, .big);
 
         const intent_num = try reader.readVarInt(u32);
         const intent: Intent = @enumFromInt(intent_num.value);
