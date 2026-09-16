@@ -52,18 +52,18 @@ fn receivePacketsLoop(
 
 /// Packet Format:
 ///
-/// When compression is disabled (compression threshold is not defined or less than 1):
-/// - Packet Length -> Varint
-/// - Packet ID -> Varint
+/// When compression is disabled (compression threshold is not defined or less than 0):
+/// - Packet Length -> VarInt
+/// - Packet ID -> VarInt
 /// - Body -> Byte Array
 ///
 /// When compression is enabled (compression threshold is defined and more or equal than 0):
-///
-/// - Packet Length -> Varint
-/// - Data Length -> Varint -> Length of uncompressed data (Packet ID + Data).
-///                            0 if data came uncompressed, which happens when data length didn't meet compression threshold
+/// - Packet Length -> VarInt
+/// - Data Length -> VarInt -> Length of uncompressed data (Packet ID + Body).
+///                            0 if data came uncompressed, which happens when
+///                            data length didn't meet compression threshold
 /// - Data:
-/// - - Packet ID -> Varint
+/// - - Packet ID -> VarInt
 /// - - Body -> Byte Array
 pub fn readPacket(
     direction: protocol.PacketDirection,

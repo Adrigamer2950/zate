@@ -48,6 +48,8 @@ pub fn dispatchPacket(
     packet_len: u32,
     raw_packet_id: protocol.VarInt(u32),
 ) !void {
+    const remaining = packet_len - raw_packet_id.bytes_read;
+
     inline for (@typeInfo(protocol.Packets).@"struct".decls) |state_decl| {
         var state_name_buf: [32]u8 = undefined;
         const state_name = std.ascii.lowerString(&state_name_buf, state_decl.name);
@@ -71,8 +73,6 @@ pub fn dispatchPacket(
                         const packet_id = PacketInfo.packet_id;
 
                         if (packet_id == raw_packet_id.value) {
-                            const remaining = packet_len - raw_packet_id.bytes_read;
-
                             log.debug("received: state={t} packet_name={s} packet_len={d}", .{ connection.state, packet_name, remaining });
 
                             var limited_buffer: [2048]u8 = undefined;
@@ -108,7 +108,7 @@ pub fn dispatchPacket(
         }
     }
 
-    const remaining = packet_len - raw_packet_id.bytes_read;
+    // Packet wasn't handled so we just forward it to its destination
 
     const body_buf = try connection.alloc.alloc(u8, 3 + remaining); // Giving 3 bytes for packet_id
     var raw_body_writer: std.Io.Writer = .fixed(body_buf);
@@ -211,6 +211,7 @@ pub fn sendPacket(
     try writeFramedBody(io, connection, packet.direction, body_writer.buffered(), connection.alloc);
 }
 
+// Refer to src/net/receiver.zig for documentation on how is a Packet structured
 fn writeFramedBody(
     io: std.Io,
     connection: *net.Connection,

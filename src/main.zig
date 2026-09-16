@@ -11,9 +11,22 @@ pub fn main() !void {
 
     const io = io_impl.io();
 
-    const string_address = zate.config.listen_address;
+    var app_future = io.concurrent(listen, .{ io, &arena }) catch |err| switch (err) {
+        error.ConcurrencyUnavailable => util.fatal("Concurrency unavailable", .{}),
+    };
 
-    const address = try std.Io.net.IpAddress.parseLiteral(string_address);
+    shutdown.waitForShutdown(io);
+    // TODO: Kick all players gracefully
+    app_future.cancel(io) catch |err| switch (err) {
+        error.Canceled => {},
+    };
+}
+
+fn listen(io: std.Io, arena: *std.heap.ArenaAllocator) std.Io.Cancelable!void {
+    const string_address = zate.config.listen_address;
+    const address = std.Io.net.IpAddress.parseLiteral(string_address) catch |err| {
+        util.fatal("invalid listen address: {t}", .{err});
+    };
 
     var server = address.listen(io, .{
         .reuse_address = true,
@@ -30,6 +43,7 @@ pub fn main() !void {
     defer client_group.cancel(io);
 
     log.info("listening on tcp://{s}", .{string_address});
+    defer log.info("shutting down", .{});
 
     while (true) {
         var stream = server.accept(io) catch |err| switch (err) {
@@ -47,7 +61,7 @@ pub fn main() !void {
             },
         };
 
-        client_group.concurrent(io, handleConnection, .{ io, stream, &arena }) catch |err| switch (err) {
+        client_group.concurrent(io, handleConnection, .{ io, stream, arena }) catch |err| switch (err) {
             error.ConcurrencyUnavailable => {
                 stream.close(io);
                 continue;
@@ -87,5 +101,7 @@ const net = zate.net;
 const protocol = zate.protocol;
 const util = zate.util;
 const zate = @import("root.zig");
+
+const shutdown = @import("shutdown.zig");
 
 const std = @import("std");

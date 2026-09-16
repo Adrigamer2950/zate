@@ -8,8 +8,10 @@ Toy Minecraft Proxy. Based on MC 1.21.8 protocol
 - [x] Inject custom brand
 - [x] Packet compression (zlib)
 - [x] Status
+- [x] Graceful shutdown
 - [ ] Handle logins from the proxy
 - [ ] Online mode (Encryption)
 - [ ] Command injection
 - [ ] Backend switching
 - [ ] Multiversion handling
+- [ ] Plugin Messaging
